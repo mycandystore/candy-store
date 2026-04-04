@@ -87,7 +87,28 @@ body {
     transform: translateY(-10px);
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
 }
+#clearCartBtn {
+    background-color: #e74c3c; /* لون أحمر جذاب */
+    color: white; /* نص أبيض */
+    border: none; /* بدون حدود */
+    padding: 10px 20px; /* مسافة داخلية */
+    font-size: 16px; /* حجم الخط */
+    border-radius: 8px; /* زوايا مدورة */
+    cursor: pointer; /* شكل المؤشر عند المرور */
+    transition: all 0.3s ease; /* حركة سلسة عند التفاعل */
+    display: inline-flex; /* لترتيب الإيموجي والنص */
+    align-items: center; 
+    gap: 8px; /* مسافة بين الإيموجي والنص */
+}
 
+#clearCartBtn:hover {
+    background-color: #c0392b; /* تغير اللون عند المرور */
+    transform: scale(1.05); /* تكبير بسيط */
+}
+
+#clearCartBtn:active {
+    transform: scale(0.95); /* ضغط الزرار */
+}
 .product-image {
     width: 100%;
     height: 180px; /* كبرناها شوية */

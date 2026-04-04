@@ -173,6 +173,18 @@ function sendOrder() {
 
     window.open(`https://wa.me/201142684154?text=${encodeURIComponent(text)}`);
 }
+document.getElementById("clearCartBtn").addEventListener("click", () => {
+    if (Object.keys(cart).length === 0) {
+        alert("السلة بالفعل فارغة!");
+        return;
+    }
+
+    const confirmClear = confirm("هل تريد حقًا إفراغ السلة؟");
+    if (confirmClear) {
+        clearCart(); // تنادي دالة إفراغ السلة الجاهزة
+        alert("تم إفراغ السلة بنجاح!");
+    }
+});
 
 // تفريغ السلة
 function clearCart() {
