@@ -1,76 +1,184 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍭 dib&candy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            text-align: center;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#764ba2">
+<meta name="description" content="dib & candy — بوكسات هدايا، اندومي وتوبوكي، سويتس وكاندي، وسناكس. اختار اللي نفسك فيه واطلب من واتساب.">
+<title>🍭 dib & candy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
-        .container {
-            color: white;
-        }
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
+    html { -webkit-text-size-adjust: 100%; }
 
-        p {
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
+    body {
+        font-family: 'Cairo', sans-serif;
+        min-height: 100vh;
+        min-height: 100dvh;
+        color: #fff;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 55%, #c44569 100%);
+        overflow-x: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        position: relative;
+    }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            max-width: 500px;
-            margin: auto;
-        }
+    /* خلفية زخرفية ناعمة */
+    .bg-decor { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.32; }
+    .blob-a { width: 280px; height: 280px; background: #ff6b9d; top: -70px; inset-inline-end: -60px; }
+    .blob-b { width: 320px; height: 320px; background: #ffd56b; bottom: -110px; inset-inline-start: -80px; }
+    .blob-c { width: 220px; height: 220px; background: #5eead4; top: 38%; inset-inline-start: -70px; }
 
-        .card {
-            background: white;
-            color: #333;
-            padding: 30px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: bold;
-            transition: 0.3s;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
+    .container { position: relative; z-index: 1; max-width: 480px; width: 100%; text-align: center; }
 
-        .card:hover {
-            transform: translateY(-8px);
-        }
-    </style>
+    .brand {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 6px;
+    }
+    .brand-emoji { font-size: 3.1rem; display: inline-block; transform-origin: 65% 75%; }
+    .brand-name {
+        font-size: 2.15rem;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+    .brand-name .amp { color: #ffd56b; font-weight: 900; padding: 0 3px; }
+
+    .tagline {
+        margin: 6px 0 34px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        opacity: 0.92;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    @media (max-width: 420px) {
+        .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+        --accent: #764ba2;
+        --accent-soft: #f1edfb;
+        background: #fff;
+        color: #2d2640;
+        text-decoration: none;
+        border-radius: 22px;
+        padding: 26px 16px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 14px 30px rgba(20, 10, 40, 0.18);
+        border-top: 5px solid var(--accent);
+        transform: rotate(var(--tilt, 0deg));
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .card:nth-child(odd)  { --tilt: -1.4deg; }
+    .card:nth-child(even) { --tilt: 1.4deg; }
+
+    .card:hover,
+    .card:focus-visible {
+        transform: rotate(0deg) translateY(-6px);
+        box-shadow: 0 20px 38px rgba(20, 10, 40, 0.26);
+    }
+    .card:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+    .card:active { transform: rotate(0deg) translateY(-2px) scale(0.98); }
+
+    .card-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--accent-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.7rem;
+    }
+    .card-title { font-weight: 800; font-size: 1.05rem; line-height: 1.3; }
+    .card-sub { font-size: 0.8rem; color: #766f87; font-weight: 600; }
+
+    .card--gift    { --accent: #ff6b9d; --accent-soft: #ffe9f1; }
+    .card--indomie { --accent: #ff6b35; --accent-soft: #ffece3; }
+    .card--sweets  { --accent: #8b5cf6; --accent-soft: #efe7ff; }
+    .card--snacks  { --accent: #f4a224; --accent-soft: #fff3e0; }
+
+    /* حركة دخول بسيطة، وبتتراعى تفضيلات تقليل الحركة */
+    @media (prefers-reduced-motion: no-preference) {
+        .brand-emoji { animation: wiggle 0.7s ease 0.15s 1 both; }
+        .tagline { animation: rise 0.5s ease 0.35s both; }
+        .grid .card { opacity: 0; animation: rise 0.5s ease both; }
+        .grid .card:nth-child(1) { animation-delay: 0.45s; }
+        .grid .card:nth-child(2) { animation-delay: 0.55s; }
+        .grid .card:nth-child(3) { animation-delay: 0.65s; }
+        .grid .card:nth-child(4) { animation-delay: 0.75s; }
+    }
+
+    @keyframes wiggle {
+        0%   { transform: rotate(0deg); }
+        25%  { transform: rotate(-10deg); }
+        55%  { transform: rotate(8deg); }
+        80%  { transform: rotate(-4deg); }
+        100% { transform: rotate(0deg); }
+    }
+    @keyframes rise {
+        from { opacity: 0; transform: translateY(14px) rotate(var(--tilt, 0deg)); }
+        to   { opacity: 1; transform: translateY(0) rotate(var(--tilt, 0deg)); }
+    }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🍭 dib&candy</h1>
-    <p>اختار اللي نفسك فيه 👇</p>
-
-    <div class="grid">
-        <a href="gift.html" class="card">🎁 بوكسات وبوكيهات</a>
-        <a href="indomie.html" class="card">🍜 اندومي وتوبوكي</a>
-        <a href="sweets.html" class="card">🍭 سويتس وكاندي</a>
-        <a href="snacks.html" class="card">سناكس</a>
-    </div>
+<div class="bg-decor" aria-hidden="true">
+    <span class="blob blob-a"></span>
+    <span class="blob blob-b"></span>
+    <span class="blob blob-c"></span>
 </div>
+
+<main class="container">
+    <div class="brand">
+        <span class="brand-emoji" aria-hidden="true">🍭</span>
+        <h1 class="brand-name">dib <span class="amp">&amp;</span> candy</h1>
+    </div>
+    <p class="tagline">اختار اللي نفسك فيه 👇</p>
+
+    <nav class="grid" aria-label="أقسام المتجر">
+        <a href="gift.html" class="card card--gift">
+            <span class="card-icon" aria-hidden="true">🎁</span>
+            <span class="card-title">بوكسات وبوكيهات</span>
+            <span class="card-sub">هدايا حلوة لكل المناسبات</span>
+        </a>
+        <a href="indomie.html" class="card card--indomie">
+            <span class="card-icon" aria-hidden="true">🍜</span>
+            <span class="card-title">اندومي وتوبوكي</span>
+            <span class="card-sub">نكهات حارة وجامدة</span>
+        </a>
+        <a href="sweets.html" class="card card--sweets">
+            <span class="card-icon" aria-hidden="true">🍭</span>
+            <span class="card-title">سويتس وكاندي</span>
+            <span class="card-sub">شوكولاتة وكاندي ومجففات</span>
+        </a>
+        <a href="snacks.html" class="card card--snacks">
+            <span class="card-icon" aria-hidden="true">🍟</span>
+            <span class="card-title">سناكس</span>
+            <span class="card-sub">تشيبس وسناكس متنوعة</span>
+        </a>
+    </nav>
+</main>
 
 </body>
 </html>
