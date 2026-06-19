@@ -9,15 +9,16 @@ const allProducts = [
     { id: 4, name: "بوكيه كاندي 400 جرام", price: 220 },
 
     // 🍜 اندومي (من 100)
-    { id: 101, name: "اندومي بينك", price: 100 },
-    { id: 102, name: "اندومي كريمي", price: 100 },
-    { id: 103, name: "اندومي اكس1", price: 100 },
-    { id: 104, name: "اندومي اكس2", price: 100 },
-    { id: 105, name: "اندومي اكس3", price: 100 },
-    { id: 106, name: "اندومي ليمون", price: 100 },
-    { id: 107, name: "اندومي خضار", price: 100 },
-    { id: 108, name: "اندومي كواترو", price: 100 },
-    { id: 108, name: "اندومي كواترو", price: 100 },
+    { id: 101, name: "اندومي بينك", price: 110
+     },
+    { id: 102, name: "اندومي كريمي", price: 110 },
+    { id: 103, name: "اندومي اكس1", price: 110 },
+    { id: 104, name: "اندومي اكس2", price: 110 },
+    { id: 105, name: "اندومي اكس3", price: 110 },
+    { id: 106, name: "اندومي ليمون", price: 110 },
+    { id: 107, name: "اندومي خضار", price: 110 },
+    { id: 108, name: "اندومي كواترو", price: 110 },
+    { id: 108, name: "اندومي كواترو", price: 110 },
     { id: 109, name: "اندومي صويا صوص", price: 100 },
     { id: 110, name: "اندومي سويت اند ساور", price: 100 },
     { id: 111, name: "اندومي فولكانو", price: 100 },
@@ -224,8 +225,8 @@ function injectFloatingCartStyles() {
     style.textContent = `
         .floating-cart-btn {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
+            bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+            left: calc(20px + env(safe-area-inset-left, 0px));
             width: 60px;
             height: 60px;
             border-radius: 50%;
@@ -238,11 +239,22 @@ function injectFloatingCartStyles() {
             justify-content: center;
             cursor: pointer;
             box-shadow: 0 4px 14px rgba(196, 69, 105, 0.45);
-            z-index: 9998;
+            z-index: 999999;
             transition: transform 0.2s ease, opacity 0.2s ease;
         }
         .floating-cart-btn:active { transform: scale(0.92); }
         .floating-cart-btn.empty { opacity: 0; pointer-events: none; transform: scale(0.6); }
+
+        /* على الموبايل: نرفع الزرار شوية لفوق عشان يضمن إنه فوق أي شريط تحكم
+           بيظهر في متصفح الموبايل أو في المتصفح الداخلي بتاع واتساب/إنستجرام */
+        @media (max-width: 768px) {
+            .floating-cart-btn {
+                bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
+            }
+        }
 
         .floating-cart-badge {
             position: absolute;
@@ -348,7 +360,7 @@ function injectFloatingCartStyles() {
         }
 
         .floating-cart-footer {
-            padding: 14px 18px;
+            padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px));
             border-top: 1px solid #eee;
         }
         .floating-cart-total {
