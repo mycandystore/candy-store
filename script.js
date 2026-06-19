@@ -153,6 +153,9 @@ function updateCartDisplay() {
 
     if (totalEl) totalEl.textContent = total;
     if (countEl) countEl.textContent = count + " قطعة";
+
+    // تحديث السلة العائمة كمان
+    updateFloatingCart();
 }
 
 // إرسال الطلب
@@ -208,3 +211,289 @@ function saveCart() {
 
 // تشغيل
 document.addEventListener('DOMContentLoaded', loadProducts);
+
+/* ============================================
+   🛒 السلة العائمة (Floating Cart)
+   بتفضل ظاهرة فوق الصفحة وانت بتمرر، وبتفتح
+   نافذة سريعة فيها تفاصيل السلة وزرار الإرسال
+   ============================================ */
+
+// إضافة الـ CSS الخاص بالسلة العائمة مرة واحدة بس
+function injectFloatingCartStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .floating-cart-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            color: #fff;
+            border: none;
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(196, 69, 105, 0.45);
+            z-index: 9998;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        .floating-cart-btn:active { transform: scale(0.92); }
+        .floating-cart-btn.empty { opacity: 0; pointer-events: none; transform: scale(0.6); }
+
+        .floating-cart-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #2ecc71;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 22px;
+            height: 22px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            box-shadow: 0 0 0 2px #fff;
+        }
+
+        .floating-cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 9999;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .floating-cart-overlay.open { display: flex; }
+
+        .floating-cart-sheet {
+            background: #fff;
+            width: 100%;
+            max-width: 480px;
+            max-height: 80vh;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: floatingCartSlideUp 0.25s ease-out;
+            font-family: 'Cairo', sans-serif;
+        }
+        @keyframes floatingCartSlideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .floating-cart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            border-bottom: 1px solid #eee;
+        }
+        .floating-cart-header h3 { margin: 0; font-size: 18px; }
+        .floating-cart-close {
+            background: #f1f1f1;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .floating-cart-items {
+            overflow-y: auto;
+            padding: 6px 18px;
+            flex: 1;
+        }
+        .floating-cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f3f3;
+        }
+        .floating-cart-item-name { font-size: 14px; font-weight: 600; }
+        .floating-cart-item-price { font-size: 12px; color: #888; margin-top: 2px; }
+        .floating-cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .floating-cart-item-controls button {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background: #fafafa;
+            cursor: pointer;
+            font-size: 15px;
+            line-height: 1;
+        }
+        .floating-cart-empty {
+            text-align: center;
+            color: #999;
+            padding: 40px 10px;
+            font-size: 14px;
+        }
+
+        .floating-cart-footer {
+            padding: 14px 18px;
+            border-top: 1px solid #eee;
+        }
+        .floating-cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .floating-cart-actions { display: flex; gap: 10px; }
+        .floating-cart-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .floating-cart-send { background: #25D366; color: #fff; }
+        .floating-cart-clear { background: #fbeaea; color: #c0392b; }
+    `;
+    document.head.appendChild(style);
+}
+
+// إنشاء الزرار العائم + نافذة السلة وإضافتهم للصفحة
+function createFloatingCart() {
+    // الزرار العائم
+    const btn = document.createElement('button');
+    btn.className = 'floating-cart-btn';
+    btn.id = 'floatingCartBtn';
+    btn.setAttribute('aria-label', 'السلة');
+    btn.innerHTML = `🛒<span class="floating-cart-badge" id="floatingCartBadge">0</span>`;
+    btn.addEventListener('click', openFloatingCart);
+    document.body.appendChild(btn);
+
+    // النافذة المنبثقة (Bottom Sheet)
+    const overlay = document.createElement('div');
+    overlay.className = 'floating-cart-overlay';
+    overlay.id = 'floatingCartOverlay';
+    overlay.innerHTML = `
+        <div class="floating-cart-sheet">
+            <div class="floating-cart-header">
+                <h3>🛒 سلة طلباتك</h3>
+                <button class="floating-cart-close" id="floatingCartCloseBtn">×</button>
+            </div>
+            <div class="floating-cart-items" id="floatingCartItems"></div>
+            <div class="floating-cart-footer">
+                <div class="floating-cart-total">
+                    <span>الإجمالي</span>
+                    <span><span id="floatingCartTotal">0</span> جنيه</span>
+                </div>
+                <div class="floating-cart-actions">
+                    <button class="floating-cart-clear" id="floatingCartClearBtn">🗑️ إفراغ</button>
+                    <button class="floating-cart-send" id="floatingCartSendBtn">📲 إرسال الطلب</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    // إغلاق عند الضغط على الخلفية أو زرار الإغلاق
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeFloatingCart();
+    });
+    document.getElementById('floatingCartCloseBtn').addEventListener('click', closeFloatingCart);
+    document.getElementById('floatingCartClearBtn').addEventListener('click', clearCart);
+    document.getElementById('floatingCartSendBtn').addEventListener('click', sendOrder);
+}
+
+function openFloatingCart() {
+    renderFloatingCartItems();
+    document.getElementById('floatingCartOverlay').classList.add('open');
+}
+
+function closeFloatingCart() {
+    document.getElementById('floatingCartOverlay').classList.remove('open');
+}
+
+// رسم محتوى السلة جوه النافذة
+function renderFloatingCartItems() {
+    const container = document.getElementById('floatingCartItems');
+    if (!container) return;
+
+    const ids = Object.keys(cart);
+
+    if (ids.length === 0) {
+        container.innerHTML = `<div class="floating-cart-empty">السلة فاضية حاليًا 🙂</div>`;
+        return;
+    }
+
+    container.innerHTML = '';
+    ids.forEach(id => {
+        const product = allProducts.find(p => p.id == id);
+        if (!product) return;
+
+        const qty = cart[id];
+        const item = document.createElement('div');
+        item.className = 'floating-cart-item';
+        item.innerHTML = `
+            <div>
+                <div class="floating-cart-item-name">${product.name}</div>
+                <div class="floating-cart-item-price">${product.price} جنيه × ${qty}</div>
+            </div>
+            <div class="floating-cart-item-controls">
+                <button onclick="changeQuantity(${product.id}, -1)">−</button>
+                <span>${qty}</span>
+                <button onclick="changeQuantity(${product.id}, 1)">+</button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// تحديث عدّاد وإجمالي الزرار العائم (بتتنادى من updateCartDisplay تلقائي)
+function updateFloatingCart() {
+    const badge = document.getElementById('floatingCartBadge');
+    const btn = document.getElementById('floatingCartBtn');
+    const totalEl = document.getElementById('floatingCartTotal');
+
+    let total = 0;
+    let count = 0;
+
+    for (let id in cart) {
+        const product = allProducts.find(p => p.id == id);
+        if (product) {
+            total += product.price * cart[id];
+            count += cart[id];
+        }
+    }
+
+    if (badge) badge.textContent = count;
+    if (btn) btn.classList.toggle('empty', count === 0);
+    if (totalEl) totalEl.textContent = total;
+
+    // لو النافذة مفتوحة، حدّث محتواها كمان عشان تفضل لايف
+    const overlay = document.getElementById('floatingCartOverlay');
+    if (overlay && overlay.classList.contains('open')) {
+        renderFloatingCartItems();
+    }
+}
+
+// تشغيل السلة العائمة أول ما الصفحة تحمل
+document.addEventListener('DOMContentLoaded', () => {
+    injectFloatingCartStyles();
+    createFloatingCart();
+    updateFloatingCart();
+});
