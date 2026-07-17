@@ -4,14 +4,508 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🍜 اندومي وتوبوكي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="اندومي كوري، صوصات منفصلة، وتوبوكي أصلي — اطلب بسهولة وابعت طلبك على واتساب.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Baloo+Bhaijaan+2:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+/* ============================================================
+   منتجات كوري — هوية بصرية "علبة نودلز"
+   الألوان: ورقي دافئ + أحمر قوتشوجانج + ذهبي بيضة + أخضر سوجو
+   ============================================================ */
+
+:root {
+  --paper: #FBF1DF;
+  --paper-2: #F5E6C8;
+  --card: #FFFCF5;
+  --ink: #2A1E19;
+  --ink-soft: #6B564A;
+  --red: #D6293A;
+  --red-deep: #A81D2C;
+  --gold: #F2A93B;
+  --gold-deep: #D98826;
+  --green: #2E9E68;
+  --green-deep: #21774C;
+  --line: #E9D6AE;
+
+  --font-display: "Baloo Bhaijaan 2", "Cairo", sans-serif;
+  --font-body: "Cairo", sans-serif;
+
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --shadow-card: 0 6px 18px rgba(42, 30, 25, 0.10);
+  --shadow-pop: 0 10px 28px rgba(214, 41, 58, 0.28);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background:
+    radial-gradient(circle at 15% 0%, #FCEBC9 0%, transparent 45%),
+    radial-gradient(circle at 85% 10%, #FBE3C9 0%, transparent 40%),
+    var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  padding-bottom: 96px; /* room for mobile sticky bar */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 18px 16px 40px;
+}
+
+/* ---------------- Header ---------------- */
+
+.header {
+  position: relative;
+  text-align: center;
+  padding: 34px 16px 30px;
+  margin-bottom: 22px;
+  background: linear-gradient(180deg, #FFF6E4 0%, var(--paper) 100%);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.header::before,
+.header::after {
+  content: "";
+  position: absolute;
+  top: -30px;
+  width: 4px;
+  height: 60px;
+  background: rgba(42,30,25,0.12);
+  border-radius: 4px;
+  animation: steam 3.2s ease-in-out infinite;
+  filter: blur(1px);
+}
+.header::before { left: 46%; animation-delay: 0s; }
+.header::after  { left: 54%; animation-delay: 1.1s; }
+
+@keyframes steam {
+  0%   { transform: translateY(0) scaleY(0.8); opacity: 0; }
+  25%  { opacity: .6; }
+  60%  { opacity: .35; }
+  100% { transform: translateY(-38px) scaleY(1.3); opacity: 0; }
+}
+
+.header h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(28px, 6vw, 40px);
+  margin: 0 0 6px;
+  color: var(--red-deep);
+  letter-spacing: 0.5px;
+}
+
+.header p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ---------------- Category pills (page nav) ---------------- */
+
+.navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 26px 0 6px;
+}
+
+.nav-btn {
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--ink);
+  background: var(--card);
+  border: 2px solid var(--line);
+  padding: 10px 20px;
+  border-radius: 999px;
+  transition: transform .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.nav-btn:hover {
+  transform: translateY(-2px);
+  background: var(--gold);
+  border-color: var(--gold-deep);
+  color: var(--ink);
+}
+
+.nav-btn.active {
+  background: var(--red);
+  border-color: var(--red-deep);
+  color: #fff;
+}
+
+/* ---------------- Search ---------------- */
+
+.search-wrap {
+  margin: 20px 0 8px;
+  position: relative;
+}
+
+.search-wrap input {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 13px 46px 13px 16px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  outline: none;
+  transition: border-color .15s ease;
+}
+
+.search-wrap input:focus {
+  border-color: var(--red);
+}
+
+.search-wrap .search-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 17px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* ---------------- Cart summary bar ---------------- */
+
+.cart-summary {
+  position: sticky;
+  top: 12px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 26px;
+}
+
+.cart-summary .total {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--red-deep);
+}
+
+.cart-summary .total span { font-size: 24px; }
+
+.cart-summary .items-count {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.order-btn, #clearCartBtn {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14.5px;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease;
+}
+
+.order-btn {
+  background: linear-gradient(135deg, var(--green) 0%, var(--green-deep) 100%);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(46,158,104,0.35);
+}
+
+.order-btn:hover { transform: translateY(-2px); }
+.order-btn:active { transform: translateY(0); }
+.order-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+#clearCartBtn {
+  background: transparent;
+  color: var(--ink-soft);
+  border: 2px solid var(--line);
+}
+#clearCartBtn:hover { border-color: var(--red); color: var(--red); }
+
+/* ---------------- Section headers ---------------- */
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 30px 2px 16px;
+}
+
+.section-title h2 {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.section-title .line {
+  flex: 1;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--line) 0 8px, transparent 8px 14px);
+}
+
+/* ---------------- Products grid ---------------- */
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 16px;
+}
+
+.product-card {
+  position: relative;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-md) var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 26px rgba(42,30,25,0.16);
+}
+
+.product-media {
+  position: relative;
+  height: 132px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 40%, #FFF7E6 0%, var(--paper-2) 75%);
+  border-bottom: 2px dashed var(--line);
+}
+
+.product-media img {
+  width: 92px;
+  height: 92px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--card);
+  box-shadow: 0 4px 10px rgba(42,30,25,0.18);
+  background: #fff;
+}
+
+.product-media .fallback-emoji {
+  font-size: 40px;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card);
+  border: 3px solid var(--card);
+  box-shadow: 0 4px 10px rgba(42,30,25,0.18);
+}
+
+/* price seal — signature element */
+.price-seal {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--card);
+  background: var(--red);
+  border: 2px solid var(--card);
+  padding: 7px 6px;
+  min-width: 44px;
+  text-align: center;
+  line-height: 1.1;
+  clip-path: polygon(50% 0%, 61% 10%, 78% 4%, 82% 20%, 98% 24%, 88% 38%,
+                      100% 50%, 88% 62%, 98% 76%, 82% 80%, 78% 96%, 61% 90%,
+                      50% 100%, 39% 90%, 22% 96%, 18% 80%, 2% 76%, 12% 62%,
+                      0% 50%, 12% 38%, 2% 24%, 18% 20%, 22% 4%, 39% 10%);
+  transform: rotate(-10deg);
+}
+.price-seal small { display: block; font-size: 8.5px; font-weight: 700; opacity: 0.9; }
+
+.product-info {
+  padding: 12px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.product-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.35;
+  min-height: 38px;
+}
+
+.product-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* stepper */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--paper-2);
+  border-radius: 999px;
+  padding: 4px;
+}
+
+.stepper button {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: var(--card);
+  color: var(--red-deep);
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .12s ease, transform .12s ease;
+}
+.stepper button:hover { background: var(--gold); transform: scale(1.06); }
+.stepper button:active { transform: scale(0.94); }
+
+.stepper .qty {
+  min-width: 18px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.add-btn {
+  border: none;
+  background: linear-gradient(135deg, var(--red) 0%, var(--red-deep) 100%);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(214,41,58,0.30);
+  transition: transform .12s ease;
+}
+.add-btn:hover { transform: translateY(-2px); }
+.add-btn:active { transform: translateY(0); }
+
+.product-card.in-cart {
+  border-color: var(--red);
+}
+
+/* ---------------- Empty state ---------------- */
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+.empty-state .emoji { font-size: 40px; display: block; margin-bottom: 10px; }
+
+/* ---------------- Toast ---------------- */
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 100;
+  white-space: nowrap;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---------------- Responsive ---------------- */
+
+@media (max-width: 560px) {
+  .cart-summary {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    top: auto;
+    margin-bottom: 0;
+    flex-direction: row;
+    padding: 10px 14px;
+  }
+  .cart-summary .total { font-size: 16px; }
+  .cart-summary .total span { font-size: 19px; }
+  .order-btn, #clearCartBtn { padding: 10px 14px; font-size: 13px; }
+  #clearCartBtn { display: none; } /* moved into order flow on mobile to save space */
+  .container { padding-bottom: 10px; }
+  .products-grid { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); }
+}
+
+/* visible keyboard focus */
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 3px solid var(--gold-deep);
+  outline-offset: 2px;
+}
+
+    </style>
 </head>
 <body>
     <div class="container">
+
         <div class="header">
             <h1>🍜 منتجات كوري</h1>
-            <p>أشهى المذاقات الكورية</p>
+            <p>أشهى المذاقات الكورية — اندومي، صوصات، وتوبوكي</p>
         </div>
 
         <div class="cart-summary">
@@ -19,48 +513,303 @@
                 <div class="total">الإجمالي: <span id="totalPrice">0</span> جنيه</div>
                 <div class="items-count" id="itemsCount">0 قطعة</div>
             </div>
-            <button class="order-btn" onclick="sendOrder()">📲 إرسال الطلب</button>
-            <button id="clearCartBtn">🗑️ إفراغ السلة</button>
+            <div style="display:flex; gap:8px;">
+                <button class="order-btn" onclick="sendOrder()" disabled>📲 إرسال الطلب</button>
+                <button id="clearCartBtn" type="button">🗑️ إفراغ السلة</button>
+            </div>
         </div>
-        
 
-<div id="productsGrid" class="products-grid"></div>
+        <div class="search-wrap">
+            <input id="productSearch" type="text" placeholder="دور على منتج... " autocomplete="off">
+            <span class="search-icon">🔍</span>
+        </div>
+
+        <div id="productsGrid" class="products-grid"></div>
+
         <div class="navigation">
             <a href="gift.html" class="nav-btn">🎁 بوكسات وبوكيهات</a>
             <a href="sweets.html" class="nav-btn">🍭 سويتس وكاندي</a>
-            <a href="snacks.html" class="nav-btn">سناكس</a>
+            <a href="snacks.html" class="nav-btn">🍟 سناكس</a>
         </div>
     </div>
 
-    <script src="script.js"></script>
     <script>
 const pageProducts = [
-    { id: 101, name: "اندومي بينك", price: 110, image: "images/اندومي بينك.jpeg" },
-    { id: 102, name: "اندومي كريمي", price: 110, image: "images/اندومي كريمي.jpeg" },
-    { id: 103, name: "اندومي اكس1", price: 110, image: "images/اندومي اكس1.jpeg" },
-    { id: 104, name: "اندومي اكس2", price: 110, image: "images/اندومي اكس2.jpeg" },
-    { id: 105, name: "اندومي اكس3", price: 110, image: "images/اندومي اكس3.jpeg" },
-    { id: 106, name: "اندومي ليمون", price: 110, image: "images/اندومي ليمون.jpeg" },
-    { id: 107, name: "اندومي خضار", price: 110, image: "images/اندومي خضار.jpeg" },
-    { id: 108, name: "اندومي كواترو", price: 110, image: "images/اندومي ميكس جبن.jpeg" },
+    { id: 101, name: "اندومي بينك", price: 110, image: "images/اندومي بينك.jpeg", category: "🍜 اندومي سامينج" },
+    { id: 102, name: "اندومي كريمي", price: 110, image: "images/اندومي كريمي.jpeg", category: "🍜 اندومي سامينج" },
+    { id: 103, name: "اندومي اكس1", price: 110, image: "images/اندومي اكس1.jpeg", category: "🍜 اندومي سامينج" },
+    { id: 104, name: "اندومي اكس2", price: 110, image: "images/اندومي اكس2.jpeg", category: "🍜 اندومي سامينج" },
+    { id: 105, name: "اندومي اكس3", price: 110, image: "images/اندومي اكس3.jpeg", category: "🍜 اندومي سامينج" },
+    { id: 106, name: "اندومي ليمون", price: 110, image: "images/اندومي ليمون.jpeg", category: "🍜 اندومي سامينج" },
+    { id: 107, name: "اندومي خضار", price: 110, image: "images/اندومي خضار.jpeg", category: "🍜 اندومي سامينج" },
+    { id: 108, name: "اندومي كواترو", price: 110, image: "images/اندومي ميكس جبن.jpeg", category: "🍜 اندومي سامينج" },
 
-    { id: 109, name: "اندومي صويا صوص", price: 100, image: "images/صويا.jpg" },
-    { id: 110, name: "اندومي سويت اند ساور", price: 100, image: "images/81a5aVQ+0NL._AC_UF894,1000_QL80_.jpg" },
-    { id: 111, name: "اندومي فولكانو", price: 100, image: "images/download.jpg" },
-    { id: 112, name: "اندومي كاربونارا", price: 100, image: "images/بالدو جبنه.jpg" },
-    { id: 113, name: "اندومي جبنه", price: 100, image: "images/بالدو جبنه تشيز.jpg" },
-    { id: 114, name: "اندومي كيمتشي", price: 100, image: "images/بالدو كيمتشي.jpg" },
+    { id: 109, name: "اندومي صويا صوص", price: 100, image: "images/صويا.jpg", category: "🥢 اندومي بالدو" },
+    { id: 110, name: "اندومي سويت اند ساور", price: 100, image: "images/81a5aVQ+0NL._AC_UF894,1000_QL80_.jpg", category: "🥢 اندومي بالدو" },
+    { id: 111, name: "اندومي فولكانو", price: 100, image: "images/download.jpg", category: "🥢 اندومي بالدو" },
+    { id: 112, name: "اندومي كاربونارا", price: 100, image: "images/بالدو جبنه.jpg", category: "🥢 اندومي بالدو" },
+    { id: 113, name: "اندومي جبنه", price: 100, image: "images/بالدو جبنه تشيز.jpg", category: "🥢 اندومي بالدو" },
+    { id: 114, name: "اندومي كيمتشي", price: 100, image: "images/بالدو كيمتشي.jpg", category: "🥢 اندومي بالدو" },
 
-    { id: 115, name: "صوص اندومي بينك", price: 235, image: "images/بينك.jpg" },
-    { id: 116, name: "صوص اندومي اكس1", price: 235, image: "images/download.png" },
-    { id: 117, name: "صوص اندومي اكس2", price: 235, image: "images/images.jpg" },
+    { id: 115, name: "صوص اندومي بينك", price: 235, image: "images/بينك.jpg", category: "🧂 صوص اندومي " },
+    { id: 116, name: "صوص اندومي اكس1", price: 235, image: "images/download.png", category: "🧂 صوص اندومي " },
+    { id: 117, name: "صوص اندومي اكس2", price: 235, image: "images/images.jpg", category: "🧂 صوص اندومي " },
 
-    { id: 118, name: "توبوكي جبنه ", price: 145, image: "images/توبوكي جبنه.jpg" },
-    { id: 119, name: "توبوكي حار اوريجنال", price: 145, image: "images/توبوكي اوريجنال.jpg" },
-    { id: 120, name: "توبوكي جبنه كاربونارا", price: 145, image: "images/e4166d91-1496-4f91-b17d-f717d8c8014d-1000x1000-7PIGpsj8tkOuOpAkHIJNC8n6iqUvtfS1tctD3jpp.webp" },
-    { id: 121, name: "توبوكي كب كيمتشي", price: 145, image: "images/كيمتشي.jpg" },
-    { id: 122, name: "توبوكي كب ليمون", price: 145, image: "images/ليمون.jpg" },
+    { id: 118, name: "توبوكي جبنه", price: 145, image: "images/توبوكي جبنه.jpg", category: "🌶️ توبوكي كوري" },
+    { id: 119, name: "توبوكي حار اوريجنال", price: 145, image: "images/توبوكي اوريجنال.jpg", category: "🌶️ توبوكي كوري" },
+    { id: 120, name: "توبوكي جبنه كاربونارا", price: 145, image: "images/e4166d91-1496-4f91-b17d-f717d8c8014d-1000x1000-7PIGpsj8tkOuOpAkHIJNC8n6iqUvtfS1tctD3jpp.webp", category: "🌶️ توبوكي كوري" },
+    { id: 121, name: "توبوكي كب كيمتشي", price: 145, image: "images/كيمتشي.jpg", category: "🌶️ توبوكي كوري" },
+    { id: 122, name: "توبوكي كب ليمون", price: 145, image: "images/ليمون.jpg", category: "🌶️ توبوكي كوري" },
 ];
+    </script>
+    <script>
+/* ============================================================
+   محرك السلة المشترك — يعمل على كل صفحات المتجر
+   يعتمد على مصفوفة `pageProducts` المُعرَّفة داخل كل صفحة
+   ============================================================ */
+
+// 👇 غيّر الرقم ده لرقم واتساب المحل (بصيغة دولية بدون + أو صفر أول)
+const WHATSAPP_NUMBER = "201142684154";
+
+const CART_KEY = "korean_shop_cart_v1";
+
+/* ---------- تخزين السلة (يشتغل عبر كل الصفحات) ---------- */
+
+let memoryCart = {}; // fallback لو localStorage مش متاح (زي معاينة Claude)
+let storageAvailable = true;
+
+try {
+  const testKey = "__storage_test__";
+  window.localStorage.setItem(testKey, "1");
+  window.localStorage.removeItem(testKey);
+} catch (e) {
+  storageAvailable = false;
+}
+
+function loadCart() {
+  if (!storageAvailable) return memoryCart;
+  try {
+    const raw = window.localStorage.getItem(CART_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveCart(cart) {
+  if (!storageAvailable) {
+    memoryCart = cart;
+    return;
+  }
+  try {
+    window.localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  } catch (e) {
+    memoryCart = cart;
+  }
+}
+
+let cart = loadCart(); // { [id]: { name, price, qty } }
+
+/* ---------- أدوات مساعدة ---------- */
+
+function formatPrice(n) {
+  return n.toLocaleString("ar-EG");
+}
+
+function showToast(msg) {
+  let toast = document.querySelector(".toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.className = "toast";
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add("show");
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove("show"), 1600);
+}
+
+/* ---------- عمليات السلة ---------- */
+
+function addToCart(product) {
+  const existing = cart[product.id];
+  cart[product.id] = {
+    name: product.name,
+    price: product.price,
+    qty: existing ? existing.qty + 1 : 1,
+  };
+  saveCart(cart);
+  renderAll();
+  showToast(`✅ اتضاف ${product.name}`);
+}
+
+function changeQty(id, delta) {
+  const item = cart[id];
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) delete cart[id];
+  saveCart(cart);
+  renderAll();
+}
+
+function clearCart() {
+  if (Object.keys(cart).length === 0) return;
+  const ok = window.confirm("متأكد عايز تفرّغ السلة؟");
+  if (!ok) return;
+  cart = {};
+  saveCart(cart);
+  renderAll();
+  showToast("🗑️ اتفرغت السلة");
+}
+
+function cartTotals() {
+  let total = 0;
+  let count = 0;
+  Object.values(cart).forEach((item) => {
+    total += item.price * item.qty;
+    count += item.qty;
+  });
+  return { total, count };
+}
+
+/* ---------- بناء رسالة الطلب وإرسالها على واتساب ---------- */
+
+function sendOrder() {
+  const entries = Object.values(cart);
+  if (entries.length === 0) {
+    showToast("🛒 السلة لسه فاضية");
+    return;
+  }
+  const { total, count } = cartTotals();
+  let lines = ["📦 *طلب جديد*", ""];
+  entries.forEach((item) => {
+    lines.push(`• ${item.name} × ${item.qty} = ${formatPrice(item.price * item.qty)} جنيه`);
+  });
+  lines.push("");
+  lines.push(`عدد القطع: ${count}`);
+  lines.push(`💰 الإجمالي: ${formatPrice(total)} جنيه`);
+
+  const text = encodeURIComponent(lines.join("\n"));
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+  window.open(url, "_blank");
+}
+
+/* ---------- عرض المنتجات ---------- */
+
+function productCardHTML(product) {
+  const inCart = cart[product.id];
+  const qty = inCart ? inCart.qty : 0;
+
+  return `
+    <div class="product-card ${qty > 0 ? "in-cart" : ""}" data-id="${product.id}">
+      <div class="product-media">
+        <span class="price-seal">${formatPrice(product.price)}<small>جنيه</small></span>
+        <img
+          src="${product.image}"
+          alt="${product.name}"
+          loading="lazy"
+          onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'fallback-emoji',textContent:'🍜'}))"
+        />
+      </div>
+      <div class="product-info">
+        <div class="product-name">${product.name}</div>
+        <div class="product-footer">
+          ${
+            qty > 0
+              ? `<div class="stepper">
+                   <button type="button" aria-label="زوّد الكمية" onclick="changeQty(${product.id}, 1)">+</button>
+                   <span class="qty">${qty}</span>
+                   <button type="button" aria-label="قلّل الكمية" onclick="changeQty(${product.id}, -1)">−</button>
+                 </div>`
+              : `<span></span>`
+          }
+          ${
+            qty > 0
+              ? ""
+              : `<button type="button" class="add-btn" onclick='addToCart(${JSON.stringify(product)})'>+ أضف للسلة</button>`
+          }
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function groupByCategory(products) {
+  const groups = new Map();
+  products.forEach((p) => {
+    const key = p.category || "منتجات";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(p);
+  });
+  return groups;
+}
+
+function renderProducts(filterText = "") {
+  const grid = document.getElementById("productsGrid");
+  if (!grid || typeof pageProducts === "undefined") return;
+
+  const query = filterText.trim();
+  const filtered = query
+    ? pageProducts.filter((p) => p.name.includes(query))
+    : pageProducts;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column: 1 / -1;">
+        <span class="emoji">🔍</span>
+        مفيش منتجات مطابقة لبحثك
+      </div>`;
+    return;
+  }
+
+  const groups = groupByCategory(filtered);
+  let html = "";
+  groups.forEach((items, category) => {
+    html += `
+      <div class="section-title" style="grid-column: 1 / -1;">
+        <h2>${category}</h2>
+        <div class="line"></div>
+      </div>
+    `;
+    items.forEach((p) => {
+      html += productCardHTML(p);
+    });
+  });
+
+  grid.innerHTML = html;
+}
+
+function renderSummary() {
+  const { total, count } = cartTotals();
+  const totalEl = document.getElementById("totalPrice");
+  const countEl = document.getElementById("itemsCount");
+  const orderBtn = document.querySelector(".order-btn");
+
+  if (totalEl) totalEl.textContent = formatPrice(total);
+  if (countEl) countEl.textContent = `${count} قطعة`;
+  if (orderBtn) orderBtn.disabled = count === 0;
+}
+
+function renderAll() {
+  const searchInput = document.getElementById("productSearch");
+  renderProducts(searchInput ? searchInput.value : "");
+  renderSummary();
+}
+
+/* ---------- تشغيل ---------- */
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderAll();
+
+  const clearBtn = document.getElementById("clearCartBtn");
+  if (clearBtn) clearBtn.addEventListener("click", clearCart);
+
+  const searchInput = document.getElementById("productSearch");
+  if (searchInput) {
+    searchInput.addEventListener("input", () => renderProducts(searchInput.value));
+  }
+});
+
     </script>
 </body>
 </html>
