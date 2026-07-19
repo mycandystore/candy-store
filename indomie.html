@@ -637,6 +637,138 @@ body {
 }
 #drawerClearBtn:hover { border-color: var(--red); color: var(--red); }
 
+/* ---------------- Checkout modal (بيانات الاستلام) ---------------- */
+
+.checkout-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 260;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+.checkout-modal.open { opacity: 1; pointer-events: auto; }
+
+@media (min-width: 561px) {
+  .checkout-modal { align-items: center; }
+}
+
+.checkout-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(42, 30, 25, 0.5);
+}
+
+.checkout-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: var(--paper);
+  border: 2px solid var(--line);
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -10px 30px rgba(42,30,25,0.25);
+  transform: translateY(24px);
+  transition: transform .25s ease;
+}
+.checkout-modal.open .checkout-sheet { transform: translateY(0); }
+
+@media (min-width: 561px) {
+  .checkout-sheet {
+    border-radius: 22px;
+    box-shadow: 0 20px 50px rgba(42,30,25,0.3);
+  }
+}
+
+.checkout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 18px 12px;
+  border-bottom: 2px dashed var(--line);
+}
+.checkout-header h3 {
+  font-family: var(--font-display);
+  font-size: 19px;
+  margin: 0;
+  color: var(--red-deep);
+}
+.checkout-header p {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.checkout-form {
+  padding: 16px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field label {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.field label .req { color: var(--red); }
+
+.field input,
+.field textarea {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  outline: none;
+  transition: border-color .15s ease;
+  resize: vertical;
+}
+.field input:focus,
+.field textarea:focus { border-color: var(--red); }
+
+.field-error {
+  display: none;
+  font-size: 12px;
+  color: var(--red-deep);
+  font-weight: 700;
+  margin-top: 5px;
+}
+.field.invalid input,
+.field.invalid textarea { border-color: var(--red); }
+.field.invalid .field-error { display: block; }
+
+.checkout-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.checkout-actions .order-btn { width: 100%; text-align: center; }
+.checkout-cancel {
+  background: transparent;
+  color: var(--ink-soft);
+  border: 2px solid var(--line);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.checkout-cancel:hover { border-color: var(--red); color: var(--red); }
+
 /* ---------------- Responsive ---------------- */
 
 @media (max-width: 560px) {
@@ -848,16 +980,160 @@ function cartTotals() {
   return { total, count };
 }
 
-/* ---------- بناء رسالة الطلب وإرسالها على واتساب ---------- */
+/* ---------- بيانات المستلم (تتحفظ عشان متكتبهاش كل مرة) ---------- */
 
-function sendOrder() {
+const CUSTOMER_KEY = "korean_shop_customer_v1";
+
+function loadCustomerInfo() {
+  if (!storageAvailable) return {};
+  try {
+    const raw = window.localStorage.getItem(CUSTOMER_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveCustomerInfo(info) {
+  if (!storageAvailable) return;
+  try {
+    window.localStorage.setItem(CUSTOMER_KEY, JSON.stringify(info));
+  } catch (e) {
+    /* ignore */
+  }
+}
+
+/* ---------- مودال بيانات الاستلام ---------- */
+
+function ensureCheckoutModal() {
+  if (document.getElementById("checkoutModal")) return;
+
+  const modal = document.createElement("div");
+  modal.className = "checkout-modal";
+  modal.id = "checkoutModal";
+  modal.innerHTML = `
+    <div class="checkout-backdrop" id="checkoutBackdrop"></div>
+    <div class="checkout-sheet" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+      <div class="checkout-header">
+        <div>
+          <h3 id="checkoutTitle">🧾 بيانات الاستلام</h3>
+          <p>هنبعت التفاصيل دي مع طلبك على واتساب</p>
+        </div>
+      </div>
+      <form class="checkout-form" id="checkoutForm" novalidate>
+        <div class="field" id="fieldName">
+          <label for="custName">الاسم <span class="req">*</span></label>
+          <input type="text" id="custName" name="name" placeholder="اكتب اسمك" autocomplete="name">
+          <div class="field-error">من فضلك اكتب الاسم</div>
+        </div>
+        <div class="field" id="fieldPhone">
+          <label for="custPhone">رقم الموبايل <span class="req">*</span></label>
+          <input type="tel" id="custPhone" name="phone" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="numeric">
+          <div class="field-error">اكتب رقم موبايل صحيح (11 رقم)</div>
+        </div>
+        <div class="field" id="fieldAddress">
+          <label for="custAddress">العنوان <span class="req">*</span></label>
+          <textarea id="custAddress" name="address" rows="2" placeholder="المحافظة، المنطقة، وأقرب علامة" autocomplete="street-address"></textarea>
+          <div class="field-error">من فضلك اكتب العنوان</div>
+        </div>
+        <div class="field" id="fieldNotes">
+          <label for="custNotes">ملاحظات (اختياري)</label>
+          <textarea id="custNotes" name="notes" rows="2" placeholder="ميعاد التوصيل المناسب، تفاصيل إضافية..."></textarea>
+        </div>
+        <div class="checkout-actions">
+          <button type="submit" class="order-btn">📲 تأكيد وإرسال الطلب</button>
+          <button type="button" class="checkout-cancel" id="checkoutCancel">رجوع للسلة</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  document.getElementById("checkoutBackdrop").addEventListener("click", closeCheckoutModal);
+  document.getElementById("checkoutCancel").addEventListener("click", closeCheckoutModal);
+  document.getElementById("checkoutForm").addEventListener("submit", handleCheckoutSubmit);
+}
+
+function openCheckoutModal() {
   const entries = Object.values(cart);
   if (entries.length === 0) {
     showToast("🛒 السلة لسه فاضية");
     return;
   }
+
+  ensureCheckoutModal();
+
+  const saved = loadCustomerInfo();
+  document.getElementById("custName").value = saved.name || "";
+  document.getElementById("custPhone").value = saved.phone || "";
+  document.getElementById("custAddress").value = saved.address || "";
+  document.getElementById("custNotes").value = "";
+
+  ["fieldName", "fieldPhone", "fieldAddress"].forEach((id) =>
+    document.getElementById(id).classList.remove("invalid")
+  );
+
+  closeCartDrawer();
+  document.getElementById("checkoutModal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeCheckoutModal() {
+  const modal = document.getElementById("checkoutModal");
+  if (modal) modal.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function handleCheckoutSubmit(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("custName").value.trim();
+  const phone = document.getElementById("custPhone").value.trim();
+  const address = document.getElementById("custAddress").value.trim();
+  const notes = document.getElementById("custNotes").value.trim();
+
+  const phoneOk = /^01[0-9]{9}$/.test(phone.replace(/\s|-/g, ""));
+
+  let valid = true;
+  const setInvalid = (fieldId, ok) => {
+    const el = document.getElementById(fieldId);
+    el.classList.toggle("invalid", !ok);
+    if (!ok) valid = false;
+  };
+  setInvalid("fieldName", name.length > 0);
+  setInvalid("fieldPhone", phoneOk);
+  setInvalid("fieldAddress", address.length > 0);
+
+  if (!valid) return;
+
+  saveCustomerInfo({ name, phone, address });
+  closeCheckoutModal();
+  sendOrder({ name, phone, address, notes });
+}
+
+/* ---------- بناء رسالة الطلب وإرسالها على واتساب ---------- */
+
+function sendOrder(customer) {
+  const entries = Object.values(cart);
+  if (entries.length === 0) {
+    showToast("🛒 السلة لسه فاضية");
+    return;
+  }
+
+  if (!customer) {
+    openCheckoutModal();
+    return;
+  }
+
   const { total, count } = cartTotals();
   let lines = ["📦 *طلب جديد*", ""];
+  lines.push(`👤 الاسم: ${customer.name}`);
+  lines.push(`📱 الموبايل: ${customer.phone}`);
+  lines.push(`📍 العنوان: ${customer.address}`);
+  if (customer.notes) lines.push(`📝 ملاحظات: ${customer.notes}`);
+  lines.push("");
+  lines.push("🛍️ الأصناف:");
   entries.forEach((item) => {
     lines.push(`• ${item.name} × ${item.qty} = ${formatPrice(item.price * item.qty)} جنيه`);
   });
@@ -868,6 +1144,7 @@ function sendOrder() {
   const text = encodeURIComponent(lines.join("\n"));
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
   window.open(url, "_blank");
+  showToast("✅ جاري فتح واتساب لإرسال طلبك");
 }
 
 /* ---------- عرض المنتجات ---------- */
@@ -1092,7 +1369,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeCartDrawer();
+    if (e.key === "Escape") {
+      closeCartDrawer();
+      closeCheckoutModal();
+    }
   });
 });
 
