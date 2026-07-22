@@ -57,9 +57,13 @@ body {
 }
 
 .container {
-  max-width: 1080px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 18px 16px 40px;
+  padding: 18px 20px 40px;
+}
+
+@media (min-width: 1600px) {
+  .container { max-width: 1480px; }
 }
 
 /* ---------------- Header ---------------- */
@@ -320,6 +324,10 @@ body {
   gap: 16px;
 }
 
+@media (min-width: 900px) {
+  .products-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+}
+
 .product-card {
   position: relative;
   background: var(--card);
@@ -371,28 +379,30 @@ body {
   box-shadow: 0 4px 10px rgba(42,30,25,0.18);
 }
 
-/* price seal — signature element */
-.price-seal {
-  position: absolute;
-  top: 8px;
-  left: 8px;
+/* price tag — next to quantity / add-to-cart */
+.price-tag {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.price-tag .old-price-footer {
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: line-through;
+  color: var(--ink-soft);
+  opacity: 0.85;
+}
+.price-tag .current-price {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 13px;
-  color: var(--card);
-  background: var(--red);
-  border: 2px solid var(--card);
-  padding: 7px 6px;
-  min-width: 44px;
-  text-align: center;
-  line-height: 1.1;
-  clip-path: polygon(50% 0%, 61% 10%, 78% 4%, 82% 20%, 98% 24%, 88% 38%,
-                      100% 50%, 88% 62%, 98% 76%, 82% 80%, 78% 96%, 61% 90%,
-                      50% 100%, 39% 90%, 22% 96%, 18% 80%, 2% 76%, 12% 62%,
-                      0% 50%, 12% 38%, 2% 24%, 18% 20%, 22% 4%, 39% 10%);
-  transform: rotate(-10deg);
+  font-size: 16px;
+  color: var(--red-deep);
 }
-.price-seal small { display: block; font-size: 8.5px; font-weight: 700; opacity: 0.9; }
+.price-tag .current-price small {
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 2px;
+}
 
 .product-info {
   padding: 12px 12px 14px;
@@ -471,6 +481,24 @@ body {
 
 .product-card.in-cart {
   border-color: var(--red);
+}
+
+/* discount / offer badge */
+.offer-ribbon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  background: var(--gold);
+  color: var(--red-deep);
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 10.5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 2px solid var(--card);
+  transform: rotate(8deg);
+  box-shadow: 0 3px 8px rgba(42,30,25,0.2);
 }
 
 /* ---------------- Empty state ---------------- */
@@ -836,7 +864,7 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
     <script>
 const pageProducts = [
-    { id: 101, name: "اندومي بينك", price: 110, image: "images/اندومي بينك.jpeg", category: "🍜 اندومي سامينج" },
+    { id: 101, name: "اندومي بينك", price: 110, oldPrice: 250, image: "images/اندومي بينك.jpeg", category: "🍜 اندومي سامينج" },
     { id: 102, name: "اندومي كريمي", price: 110, image: "images/اندومي كريمي.jpeg", category: "🍜 اندومي سامينج" },
     { id: 103, name: "اندومي اكس1", price: 110, image: "images/اندومي اكس1.jpeg", category: "🍜 اندومي سامينج" },
     { id: 104, name: "اندومي اكس2", price: 110, image: "images/اندومي اكس2.jpeg", category: "🍜 اندومي سامينج" },
@@ -1159,11 +1187,12 @@ function productCardHTML(product) {
   const inCart = cart[product.id];
   const qty = inCart ? inCart.qty : 0;
   const fallback = fallbackEmojiFor(product.category);
+  const hasOffer = typeof product.oldPrice === "number" && product.oldPrice > product.price;
 
   return `
     <div class="product-card ${qty > 0 ? "in-cart" : ""}" data-id="${product.id}">
       <div class="product-media">
-        <span class="price-seal">${formatPrice(product.price)}<small>جنيه</small></span>
+        ${hasOffer ? `<span class="offer-ribbon">🔥 عرض</span>` : ""}
         <img
           src="${product.image}"
           alt="${product.name}"
@@ -1174,6 +1203,10 @@ function productCardHTML(product) {
       <div class="product-info">
         <div class="product-name">${product.name}</div>
         <div class="product-footer">
+          <div class="price-tag">
+            ${hasOffer ? `<span class="old-price-footer">${formatPrice(product.oldPrice)} جنيه</span>` : ""}
+            <span class="current-price">${formatPrice(product.price)}<small>جنيه</small></span>
+          </div>
           ${
             qty > 0
               ? `<div class="stepper">
@@ -1181,11 +1214,6 @@ function productCardHTML(product) {
                    <span class="qty">${qty}</span>
                    <button type="button" aria-label="قلّل الكمية" onclick="changeQty(${product.id}, -1)">−</button>
                  </div>`
-              : `<span></span>`
-          }
-          ${
-            qty > 0
-              ? ""
               : `<button type="button" class="add-btn" onclick='addToCart(${JSON.stringify(product)})'>+ أضف للسلة</button>`
           }
         </div>
